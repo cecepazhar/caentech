@@ -8,3 +8,6 @@ frontend/build/
 .env.*
 !.env.example
 *.log
+
+dist/
+frontend/dist/

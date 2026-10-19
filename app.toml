@@ -2,7 +2,7 @@
 name = "CAEntech"
 slug = "caentech"
 bundle_id = "com.fathforce.caentech"
-version = "0.1.0-dev"
+version = "0.1.0"
 accent_color = "rose"
 error_prefix = "CENTECH"
 description = "English Fluency & AI Speaking Coach for Software Engineers & Tech Professionals"
