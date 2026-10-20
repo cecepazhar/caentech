@@ -1,6 +1,6 @@
 //! Runtime data directory and device ID resolution.
 
-use crate::error::{CatermError, IoError};
+use crate::error::{CafError, IoError};
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,25 +26,25 @@ pub struct DataDirInfo {
     pub source: DataDirSource,
 }
 
-fn portable_marker_present() -> Result<bool, CatermError> {
+fn portable_marker_present() -> Result<bool, CafError> {
     let exe = std::env::current_exe()
-        .map_err(|e| CatermError::Io(IoError::Generic(format!("current_exe failed: {e}"))))?;
+        .map_err(|e| CafError::Io(IoError::Generic(format!("current_exe failed: {e}"))))?;
     Ok(exe
         .parent()
         .map(|dir| dir.join("portable.txt").is_file())
         .unwrap_or(false))
 }
 
-pub fn resolve_data_dir() -> Result<DataDirInfo, CatermError> {
+pub fn resolve_data_dir() -> Result<DataDirInfo, CafError> {
     let env_override = std::env::var("CENTECH_DATA_DIR").ok();
     resolve_data_dir_with(env_override.as_deref())
 }
 
-pub fn data_dir() -> Result<PathBuf, CatermError> {
+pub fn data_dir() -> Result<PathBuf, CafError> {
     resolve_data_dir().map(|info| info.path)
 }
 
-fn resolve_data_dir_with(env_override: Option<&str>) -> Result<DataDirInfo, CatermError> {
+fn resolve_data_dir_with(env_override: Option<&str>) -> Result<DataDirInfo, CafError> {
     if let Some(dir) = env_override {
         return Ok(DataDirInfo {
             path: PathBuf::from(dir),
@@ -60,7 +60,7 @@ fn resolve_data_dir_with(env_override: Option<&str>) -> Result<DataDirInfo, Cate
     }
 
     let base = directories::BaseDirs::new().ok_or_else(|| {
-        CatermError::Io(IoError::Generic(
+        CafError::Io(IoError::Generic(
             "unable to determine OS data directory (HOME/APPDATA unreadable)".into(),
         ))
     })?;
@@ -78,12 +78,12 @@ pub fn crash_dumps_dir(data_dir: &Path) -> PathBuf {
     data_dir.join("crash-dumps")
 }
 
-pub fn device_id() -> Result<String, CatermError> {
+pub fn device_id() -> Result<String, CafError> {
     let dir = data_dir()?;
     let id_file = dir.join("device_id.txt");
     if id_file.is_file() {
         let content = std::fs::read_to_string(&id_file).map_err(|e| {
-            CatermError::Io(IoError::Generic(format!("failed to read device id: {e}")))
+            CafError::Io(IoError::Generic(format!("failed to read device id: {e}")))
         })?;
         let trimmed = content.trim();
         if !trimmed.is_empty() {
@@ -92,12 +92,12 @@ pub fn device_id() -> Result<String, CatermError> {
     }
 
     std::fs::create_dir_all(&dir).map_err(|e| {
-        CatermError::Io(IoError::Generic(format!("failed to create data dir: {e}")))
+        CafError::Io(IoError::Generic(format!("failed to create data dir: {e}")))
     })?;
 
     let new_id = uuid::Uuid::new_v4().to_string();
     std::fs::write(&id_file, &new_id).map_err(|e| {
-        CatermError::Io(IoError::Generic(format!("failed to write device id: {e}")))
+        CafError::Io(IoError::Generic(format!("failed to write device id: {e}")))
     })?;
 
     Ok(new_id)

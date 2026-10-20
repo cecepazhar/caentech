@@ -131,7 +131,6 @@ pub enum CafError {
     NotImplemented(String),
 }
 
-pub type CatermError = CafError;
 
 impl CafError {
     pub fn code(&self) -> &'static str {

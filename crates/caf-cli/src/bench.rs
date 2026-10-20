@@ -106,7 +106,7 @@ fn spawn_and_measure(exe: &Path, settle_secs: u64, timeout_secs: u64) -> Result<
     std::thread::spawn(move || {
         let reader = std::io::BufReader::new(stdout);
         for line in reader.lines().map_while(Result::ok) {
-            if let Some(value) = line.strip_prefix("CATERM_COLD_START_MS=") {
+            if let Some(value) = line.strip_prefix("COLD_START_MS=") {
                 let _ = tx.send(value.to_string());
                 return;
             }
@@ -119,7 +119,7 @@ fn spawn_and_measure(exe: &Path, settle_secs: u64, timeout_secs: u64) -> Result<
             let _ = child.kill();
             let _ = child.wait();
             return Err(format!(
-                "timeout {timeout_secs}s menunggu CATERM_COLD_START_MS dari {}",
+                "timeout {timeout_secs}s menunggu COLD_START_MS dari {}",
                 exe.display()
             ));
         }

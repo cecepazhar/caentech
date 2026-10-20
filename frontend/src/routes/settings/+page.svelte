@@ -445,7 +445,7 @@
             </div>
             <div class="flex justify-between py-1 border-b border-neutral-800">
               <span class="text-neutral-500">License</span>
-              <span>MIT (with CATerm Attribution Notice)</span>
+              <span>MIT (with CAFramework Attribution Notice)</span>
             </div>
             <div class="flex justify-between py-1">
               <span class="text-neutral-500">Author</span>
