@@ -25,7 +25,7 @@
   import { getPalette, openPalette, closePalette } from '$lib/stores/commandPalette.svelte';
 
   let isCollapsed = $state(false);
-  let isVaultUnlocked = $state(false);
+  let isVaultUnlocked = $state(!APP_CONFIG.security.masterPasswordRequired);
   let pendingCrashReport = $state<ScrubbedCrashReport | null>(null);
 
   const theme = getTheme();
@@ -39,13 +39,17 @@
 
   onMount(() => {
     initTheme();
-    invoke<boolean>('is_vault_unlocked')
-      .then((unlocked) => {
-        isVaultUnlocked = unlocked;
-      })
-      .catch(() => {
-        isVaultUnlocked = false;
-      });
+    if (APP_CONFIG.security.masterPasswordRequired) {
+      invoke<boolean>('is_vault_unlocked')
+        .then((unlocked) => {
+          isVaultUnlocked = unlocked;
+        })
+        .catch(() => {
+          isVaultUnlocked = false;
+        });
+    } else {
+      isVaultUnlocked = true;
+    }
 
     getPendingCrashReport()
       .then((report) => {
